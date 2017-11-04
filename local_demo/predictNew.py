@@ -47,6 +47,3 @@ def classify(testfilepath):
             return True
         else:
             return False
-
-
-print(classify(sys.argv[1]))
