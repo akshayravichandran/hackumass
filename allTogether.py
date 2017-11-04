@@ -93,7 +93,6 @@ def extract_feature(file_name):
     return mfccs,chroma,mel,contrast,tonnetz
 
 def parse_audio_files(parent_dir,sub_dirs,file_ext='*.wav'):
-    print("\nParse audio files entered...")
     features, labels = np.empty((0,193)), np.empty(0)
     for label, sub_dir in enumerate(sub_dirs):
         for fn in glob.glob(os.path.join(parent_dir, sub_dir, file_ext)):
@@ -101,22 +100,19 @@ def parse_audio_files(parent_dir,sub_dirs,file_ext='*.wav'):
             ext_features = np.hstack([mfccs,chroma,mel,contrast,tonnetz])
             features = np.vstack([features,ext_features])
             labels = np.append(labels, fn.split('\\')[2].split('-')[1])
-    print("\nAudio files successfully parsed")
     return np.array(features), np.array(labels, dtype = np.int)
 
 def one_hot_encode(labels):
-    print("\nOne hot encode entered...")
     n_labels = len(labels)
     n_unique_labels = len(np.unique(labels))
     one_hot_encode = np.zeros((n_labels,n_unique_labels))
     one_hot_encode[np.arange(n_labels), labels] = 1
-    print("\nSuccessfully one hot encoded!")
     return one_hot_encode
 
 ###############################################################################
 
-features_test, labels_test = parse_audio_files('audio',['foldtest'])
-print(labels_test)
+#features_test, labels_test = parse_audio_files('audio',['foldtest'])
+#print(labels_test)
 
 parent_dir = 'audio'
 
@@ -150,22 +146,22 @@ learning_rate = 0.01
 
 ###############################################################################
 
-X = tf.placeholder(tf.float32,[None,n_dim])
-Y = tf.placeholder(tf.float32,[None,n_classes])
+X = tf.placeholder(tf.float32,[None,n_dim], name='X')
+Y = tf.placeholder(tf.float32,[None,n_classes] ,name='Y')
 
-W_1 = tf.Variable(tf.random_normal([n_dim,n_hidden_units_one], mean = 0, stddev=sd))
-b_1 = tf.Variable(tf.random_normal([n_hidden_units_one], mean = 0, stddev=sd))
-h_1 = tf.nn.tanh(tf.matmul(X,W_1) + b_1)
-
-
-W_2 = tf.Variable(tf.random_normal([n_hidden_units_one,n_hidden_units_two], mean = 0, stddev=sd))
-b_2 = tf.Variable(tf.random_normal([n_hidden_units_two], mean = 0, stddev=sd))
-h_2 = tf.nn.sigmoid(tf.matmul(h_1,W_2) + b_2)
+W_1 = tf.Variable(tf.random_normal([n_dim,n_hidden_units_one], mean = 0, stddev=sd), name='W_1')
+b_1 = tf.Variable(tf.random_normal([n_hidden_units_one], mean = 0, stddev=sd), name='b_1')
+h_1 = tf.nn.tanh(tf.matmul(X,W_1) + b_1, name="h_1")
 
 
-W = tf.Variable(tf.random_normal([n_hidden_units_two,n_classes], mean = 0, stddev=sd))
-b = tf.Variable(tf.random_normal([n_classes], mean = 0, stddev=sd))
-y_ = tf.nn.softmax(tf.matmul(h_2,W) + b)
+W_2 = tf.Variable(tf.random_normal([n_hidden_units_one,n_hidden_units_two], mean = 0, stddev=sd), name='W_2')
+b_2 = tf.Variable(tf.random_normal([n_hidden_units_two], mean = 0, stddev=sd), name='b_2')
+h_2 = tf.nn.sigmoid(tf.matmul(h_1,W_2) + b_2, name='h_2')
+
+
+W = tf.Variable(tf.random_normal([n_hidden_units_two,n_classes], mean = 0, stddev=sd), name='W')
+b = tf.Variable(tf.random_normal([n_classes], mean = 0, stddev=sd), name='b')
+y_ = tf.nn.softmax(tf.matmul(h_2,W) + b, name='y_')
 
 init = tf.global_variables_initializer()
 
@@ -187,14 +183,12 @@ with tf.Session() as sess:
         print("Epoch", epoch, "\n")
         _,cost = sess.run([optimizer,cost_function],feed_dict={X:train_x,Y:train_y})
         cost_history = np.append(cost_history,cost)
+    #y_pred = sess.run(tf.argmax(y_,1),feed_dict={X : features_test})
+    #print("y_pred: ", y_pred)
     saver = tf.train.Saver()
     saver.save(sess,"./nn_model")
     #y_pred = sess.run(tf.argmax(y_,1),feed_dict={X: test_x})
     #y_true = sess.run(tf.argmax(test_y,1))
-
-
-    y_pred = sess.run(tf.argmax(y_,1),feed_dict={X: features_test})
-    y_true = sess.run(tf.argmax(labels_test,0))
 
 
 ###############################################################################
@@ -208,6 +202,3 @@ plt.show()
 
 #p,r,f,s = precision_recall_fscore_support(y_true, y_pred, average='micro')
 #print ("F-Score:", round(f,3))
-
-print("y_pred: ", y_pred)
-print("y_true: ", y_true)

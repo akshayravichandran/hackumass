@@ -19,7 +19,6 @@ def extract_feature(file_name):
     return mfccs,chroma,mel,contrast,tonnetz
 
 def parse_audio_files(parent_dir,sub_dirs,file_ext='*.wav'):
-    print("\nParse audio files entered...")
     features, labels = np.empty((0,193)), np.empty(0)
     for label, sub_dir in enumerate(sub_dirs):
         for fn in glob.glob(os.path.join(parent_dir, sub_dir, file_ext)):
@@ -27,19 +26,26 @@ def parse_audio_files(parent_dir,sub_dirs,file_ext='*.wav'):
             ext_features = np.hstack([mfccs,chroma,mel,contrast,tonnetz])
             features = np.vstack([features,ext_features])
             labels = np.append(labels, fn.split('\\')[2].split('-')[1])
-    print("\nAudio files successfully parsed")
     return np.array(features), np.array(labels, dtype = np.int)
 
+features_test, labels_test = parse_audio_files('audio',['foldtest'])
+
 with tf.Session() as sess:
+
     saver = tf.train.import_meta_graph('./nn_model.meta')
     saver.restore(sess, "./nn_model")
 
-
-    features_test, labels_test = parse_audio_files('audio','foldtest')
+    graph = tf.get_default_graph()
+    X = graph.get_tensor_by_name("X:0")
+    Y = graph.get_tensor_by_name("Y:0")
+    h_1 = graph.get_tensor_by_name("h_1:0")
+    h_2 = graph.get_tensor_by_name("h_2:0")
+    y_ = graph.get_tensor_by_name("y_:0")
 
     print(tf.trainable_variables())
+    print(features_test)
+    print(labels_test)
+    y_pred = sess.run(tf.argmax(y_,1),feed_dict={X : features_test})
 
-    y_pred = sess.run([tf.argmax(y_,1)],feed_dict={X: features_test})
-    y_true = sess.run(tf.argmax(labels_test,1))
+
     print("y_pred: ", y_pred)
-    print("y_true: ",y_true)
