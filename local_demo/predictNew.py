@@ -42,8 +42,8 @@ def classify(testfilepath):
 
 
         y_pred = sess.run(tf.argmax(y_,1),feed_dict={X : features_test})
-
-        if y_pred[0] is 8:
+		
+        if int(y_pred[0]) is 8:
             return True
         else:
             return False

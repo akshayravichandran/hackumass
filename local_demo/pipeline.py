@@ -3,6 +3,7 @@ import tensorflow as tf
 import pyaudio
 import wave
 from myo import init, Hub, DeviceListener
+from predictNew import classify
 
 """
 Pipeline:
@@ -36,20 +37,20 @@ def audio_init():
 				input=True,
 				frames_per_buffer=CHUNK)
 	
-	def get_audio(seconds):
+	def get_audio(seconds, file):
 		print('recording')
 		frames = []
 		for i in range(0, int(RATE / CHUNK * seconds)):
 			data = stream.read(CHUNK)
 			frames.append(data)
 		print('done recording')
-		wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
+		wf = wave.open(file, 'wb')
 		wf.setnchannels(CHANNELS)
 		wf.setsampwidth(p.get_sample_size(FORMAT))
 		wf.setframerate(RATE)
 		wf.writeframes(b''.join(frames))
 		wf.close()
-		return WAVE_OUTPUT_FILENAME
+		return file
 		
 	def close_audio():
 		stream.stop_stream()
@@ -82,24 +83,36 @@ def myo_init():
 	
 # ------------- Preprocessing -----------------------
 	
-	
-# ------------- NN interaction ----------------------
-def classify(file):
-	return True
-	
 # ------------- Begin main code ---------------------
 
 audio_get, audio_close = audio_init()
 
 myo_vibrate, myo_close = myo_init()
 
+
+"""
+if predictNew.classify("../audio/fold1/106905-8-0-2.wav"):
+	print ('yes')
+	myo_vibrate()
+	
+print('huh')
+
+"""
+
+
+
 i = 0
-while (i < 4):
+while (i < 50):
 	#TODO: implement multithreading, buffering
-	file = audio_get(2)
+	uniquename = 'output' + str(i % 10) + '.wav'
+	print(uniquename)
+	file = audio_get(5, uniquename)
+	print('file is ', file)
 	if classify(file):
 		myo_vibrate()
+		print("-----------------found it!----------------")
 	i += 1
 
 audio_close()
+
 myo_close()
