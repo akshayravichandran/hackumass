@@ -1,5 +1,6 @@
 import glob
 import os
+import sys
 import librosa
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,6 +21,13 @@ plt.rcParams['legend.fontsize'] = 11
 plt.rcParams['figure.titlesize'] = 13
 
 ###############################################################################
+
+device_name = sys.argv[1]  # Choose device from cmd line. Options: gpu or cpu
+#shape = (int(sys.argv[2]), int(sys.argv[2]))
+if device_name == "gpu":
+    device_name = "/gpu:0"
+else:
+    device_name = "/cpu:0"
 
 def load_sound_files(file_paths):
     print("Load Sound File Entered....")
@@ -99,7 +107,7 @@ def parse_audio_files(parent_dir,sub_dirs,file_ext='*.wav'):
             mel, contrast = extract_feature(fn)
             ext_features = np.hstack([mel,contrast])
             features = np.vstack([features,ext_features])
-            labels = np.append(labels, fn.split('\\')[2].split('-')[1])
+            labels = np.append(labels, fn.split('/')[2].split('-')[1])
     return np.array(features), np.array(labels, dtype = np.int)
 
 def one_hot_encode(labels):
@@ -116,7 +124,7 @@ def one_hot_encode(labels):
 
 parent_dir = 'audio'
 
-sub_dirs = ['fold1']
+sub_dirs = ['fold1','fold2','fold3','fold4','fold5','fold6','fold7','fold8','fold9','fold10']
 features, labels = parse_audio_files(parent_dir,sub_dirs)
 
 ###############################################################################
@@ -193,12 +201,12 @@ with tf.Session() as sess:
 
 ###############################################################################
 
-fig = plt.figure(figsize=(10,8))
-plt.plot(cost_history)
-plt.ylabel("Cost")
-plt.xlabel("Iterations")
-plt.axis([0,training_epochs,0,np.max(cost_history)])
-plt.show()
+#fig = plt.figure(figsize=(10,8))
+#plt.plot(cost_history)
+#plt.ylabel("Cost")
+#plt.xlabel("Iterations")
+#plt.axis([0,training_epochs,0,np.max(cost_history)])
+#plt.show()
 
 #p,r,f,s = precision_recall_fscore_support(y_true, y_pred, average='micro')
 #print ("F-Score:", round(f,3))

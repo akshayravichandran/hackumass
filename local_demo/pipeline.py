@@ -1,6 +1,6 @@
 from time import sleep
 import tensorflow as tf
-import pyaudio
+#import pyaudio
 import wave
 #from myo import init, Hub, DeviceListener
 from predictNew import classify
@@ -18,7 +18,7 @@ Note:
  -in conda prompt, activate with "activate tensorflowc"
 
 """
-
+"""
 # ----------------------- Audio setup --------------------
 #initializes audio and provides functions for recording from the stream and closing the stream
 def audio_init():
@@ -58,8 +58,7 @@ def audio_init():
 		p.terminate()
 
 	return (get_audio, close_audio)
-
-
+"""
 # ------------- For Myo interaction -------------------
 '''class Listener(DeviceListener):
 
@@ -85,7 +84,7 @@ def myo_init():
 
 # ------------- Begin main code ---------------------
 
-audio_get, audio_close = audio_init()
+#audio_get, audio_close = audio_init()
 
 #myo_vibrate, myo_close = myo_init()
 
@@ -100,7 +99,7 @@ print('huh')
 """
 
 
-
+"""
 i = 0
 while (i < 50):
 	#TODO: implement multithreading, buffering
@@ -113,7 +112,12 @@ while (i < 50):
 		#myo_vibrate()
 		print("-----------------found it!----------------")
 	i += 1
+"""
 
-audio_close()
+print(classify('output0.wav'))
+print(classify('output1.wav'))
+print(classify('output2.wav'))
+print(classify('output3.wav'))
+#audio_close()
 
 #myo_close()
