@@ -23,12 +23,11 @@ plt.rcParams['figure.titlesize'] = 13
 ###############################################################################
 
 device_name = sys.argv[1]  # Choose device from cmd line. Options: gpu or cpu
-#shape = (int(sys.argv[2]), int(sys.argv[2]))
 if device_name == "gpu":
     device_name = "/gpu:0"
 else:
     device_name = "/cpu:0"
-
+"""
 def load_sound_files(file_paths):
     print("Load Sound File Entered....")
     raw_sounds = []
@@ -80,7 +79,7 @@ sound_names = ["air conditioner","car horn","children playing","dog bark","drill
                "gun shot","jackhammer","siren","street music"]
 
 raw_sounds = load_sound_files(sound_file_paths)
-
+"""
 ###############################################################################
 
 #plot_waves(sound_names,raw_sounds)
@@ -147,7 +146,7 @@ from sklearn.metrics import precision_recall_fscore_support
 
 training_epochs = 5000
 n_dim = features.shape[1]
-n_classes = 10
+n_classes = 2
 n_hidden_units_one = 280
 n_hidden_units_two = 300
 sd = 1 / np.sqrt(n_dim)
