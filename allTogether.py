@@ -99,7 +99,8 @@ def parse_audio_files(parent_dir,sub_dirs,file_ext='*.wav'):
             mel, contrast = extract_feature(fn)
             ext_features = np.hstack([mel,contrast])
             features = np.vstack([features,ext_features])
-            labels = np.append(labels, fn.split('\\')[2].split('-')[1])
+            lbl = fn.split('\\')[2].split('-')[1]
+            labels = np.append(labels, 1 if lbl is 8 else 0)
     return np.array(features), np.array(labels, dtype = np.int)
 
 def one_hot_encode(labels):
