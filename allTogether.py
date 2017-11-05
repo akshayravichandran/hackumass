@@ -84,20 +84,20 @@ raw_sounds = load_sound_files(sound_file_paths)
 def extract_feature(file_name):
     #print("\nExtracting feature from " + file_name + "...")
     X, sample_rate = librosa.load(file_name)
-    stft = np.abs(librosa.stft(X))
+    stft = np.abs(librosa.stft(X))             #short time fourier transform -- useful!
     mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=40).T,axis=0)
-    chroma = np.mean(librosa.feature.chroma_stft(S=stft, sr=sample_rate).T,axis=0)
+    #chroma = np.mean(librosa.feature.chroma_stft(S=stft, sr=sample_rate).T,axis=0)   #features based on chromatic scale -- for music analysis
     mel = np.mean(librosa.feature.melspectrogram(X, sr=sample_rate).T,axis=0)
     contrast = np.mean(librosa.feature.spectral_contrast(S=stft, sr=sample_rate).T,axis=0)
-    tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(X), sr=sample_rate).T,axis=0)
-    return mfccs,chroma,mel,contrast,tonnetz
+    #tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(X), sr=sample_rate).T,axis=0)
+    return mel,contrast
 
 def parse_audio_files(parent_dir,sub_dirs,file_ext='*.wav'):
-    features, labels = np.empty((0,193)), np.empty(0)
+    features, labels = np.empty((0,135)), np.empty(0)
     for label, sub_dir in enumerate(sub_dirs):
         for fn in glob.glob(os.path.join(parent_dir, sub_dir, file_ext)):
-            mfccs, chroma, mel, contrast,tonnetz = extract_feature(fn)
-            ext_features = np.hstack([mfccs,chroma,mel,contrast,tonnetz])
+            mel, contrast = extract_feature(fn)
+            ext_features = np.hstack([mel,contrast])
             features = np.vstack([features,ext_features])
             labels = np.append(labels, fn.split('\\')[2].split('-')[1])
     return np.array(features), np.array(labels, dtype = np.int)
@@ -186,7 +186,7 @@ with tf.Session() as sess:
     #y_pred = sess.run(tf.argmax(y_,1),feed_dict={X : features_test})
     #print("y_pred: ", y_pred)
     saver = tf.train.Saver()
-    saver.save(sess,"./nn_model")
+    saver.save(sess,"./local_demo/nn_model")
     #y_pred = sess.run(tf.argmax(y_,1),feed_dict={X: test_x})
     #y_true = sess.run(tf.argmax(test_y,1))
 
