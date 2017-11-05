@@ -2,7 +2,7 @@ from time import sleep
 import tensorflow as tf
 import pyaudio
 import wave
-from myo import init, Hub, DeviceListener
+#from myo import init, Hub, DeviceListener
 from predictNew import classify
 
 """
@@ -57,7 +57,7 @@ def audio_init():
 		p.terminate()
 
 	return (get_audio, close_audio)
-
+"""
 # ------------- For Myo interaction -------------------
 class Listener(DeviceListener):
 
@@ -80,23 +80,16 @@ def myo_init():
 	return (vibrate, close)
 
 
+"""
+
 # ------------- Preprocessing -----------------------
 
 # ------------- Begin main code ---------------------
 
 audio_get, audio_close = audio_init()
 
-myo_vibrate, myo_close = myo_init()
+#myo_vibrate, myo_close = myo_init()
 
-
-"""
-if predictNew.classify("../audio/fold1/106905-8-0-2.wav"):
-	print ('yes')
-	myo_vibrate()
-
-print('huh')
-
-"""
 
 
 i = 0
@@ -112,11 +105,6 @@ while (i < 50):
 		print("-----------------found it!----------------")
 	i += 1
 
-
-#print(classify('output0.wav'))
-#print(classify('output1.wav'))
-#print(classify('output2.wav'))
-#print(classify('output3.wav'))
 audio_close()
 
-myo_close()
+#myo_close()
