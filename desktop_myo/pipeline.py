@@ -2,7 +2,6 @@ from time import sleep
 import tensorflow as tf
 import pyaudio
 import wave
-#from myo import init, Hub, DeviceListener
 from predictNew import classify
 
 """
@@ -25,7 +24,6 @@ def audio_init():
 	FORMAT = pyaudio.paInt16
 	CHANNELS = 1
 	RATE = 44100
-	#RECORD_SECONDS = 5
 	WAVE_OUTPUT_FILENAME = 'output.wav'
 
 	p = pyaudio.PyAudio()
@@ -57,54 +55,20 @@ def audio_init():
 		p.terminate()
 
 	return (get_audio, close_audio)
-"""
-# ------------- For Myo interaction -------------------
-class Listener(DeviceListener):
 
-	def on_pair(self, myo, timestamp, firmware_version):
-		print("Hello, Myo!")
-		myo.vibrate('long')
-
-	def on_unpair(self, myo, timestamp):
-		print("Goodbye, Myo!")
-
-def myo_init():
-	init()
-	hub = Hub()
-	def vibrate():
-		print('Hello!!!')
-		hub.run(500, Listener())
-		hub.shutdown()
-	def close():
-		hub.shutdown()
-	return (vibrate, close)
-
-
-"""
-
-# ------------- Preprocessing -----------------------
-
+    
 # ------------- Begin main code ---------------------
-
 audio_get, audio_close = audio_init()
-
-#myo_vibrate, myo_close = myo_init()
-
-
 
 i = 0
 while (i < 50):
-	#TODO: implement multithreading, buffering
 	uniquename = 'output' + str(i % 3) + '.wav'
 	print(uniquename)
 	file = audio_get(6, uniquename)
 	print('file is ', file)
-	#file = '..\\audio\\fold1\\40722-8-0-2.wav'
 	if classify(file):
 		myo_vibrate()
 		print("-----------------found it!----------------")
 	i += 1
 
 audio_close()
-
-#myo_close()
