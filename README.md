@@ -14,7 +14,7 @@ This is useful for deaf or hearing impaired drivers and pedestrians.
 It uses a small neural network based on the above blog posts to classify sound recorded from a microphone, sending a bluetooth signal to the myo wristband when
 a siren is detected. It currently works with 91% accuracy.
 
-### Tools Required
+### Setup and Tools Required
 
 * Python 3.5
 * Tensorflow
@@ -23,6 +23,8 @@ a siren is detected. It currently works with 91% accuracy.
 * myo sdk
 * <a href="https://github.com/NiklasRosenstein/myo-python">myo-python</a> bindings for myo sdk
 * pyaudio
+
+Note that if training locally, the program will expect to find the data under data/audio and data/audio_balanced
 
 ### Dataset
 
